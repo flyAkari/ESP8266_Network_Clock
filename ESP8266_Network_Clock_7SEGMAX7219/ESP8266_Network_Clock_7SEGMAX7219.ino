@@ -100,7 +100,13 @@ void initdisplay()
 void digitalClockDisplay()
 {
     int years, months, days, hours, minutes, seconds, weekdays;
-    years = year(); months = month(); days = day(); hours = hour(); minutes = minute(); seconds = second(); weekdays = weekday();
+    years = year(); 
+    months = month(); 
+    days = day(); 
+    hours = hour(); 
+    minutes = minute(); 
+    seconds = second(); 
+    weekdays = weekday();
     Serial.printf("%d/%d/%d %d:%d:%d Weekday:%d\n", years, months, days, hours, minutes, seconds, weekdays);
     sendCommand(8, hours / 10);
     sendCommand(7, hours % 10);
