@@ -22,8 +22,12 @@
 #include <SPI.h>
 #include <DYWiFiConfig.h>
 #include <U8g2lib.h>
+
+//若屏幕使用SH1106，只需把SSD1306改为SH1106即可
 //U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/4, /* dc=*/5, /* reset=*/3);
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+//U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 4, /* data=*/ 5); //D-duino
+
 DYWiFiConfig wificonfig;
 ESP8266WebServer webserver(80);
 #define DEF_WIFI_SSID     "D1"
@@ -91,7 +95,7 @@ void setup()
   wificonfig.enableAP();
   while (WiFi.status() != WL_CONNECTED)
   {
-    wificonfig.handle();
+    wificonfig.handle();   //若不需要Web后台，可以注释掉此行
     //Serial.println("Waiting for Connection...");
   }
   Serial.println("");
@@ -120,7 +124,7 @@ void loop()
       oledClockDisplay();
     }
   }
-  wificonfig.handle();
+  wificonfig.handle(); //若不需要Web后台，可以注释掉此行
 }
 
 void initdisplay()
