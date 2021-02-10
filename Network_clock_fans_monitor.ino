@@ -2,7 +2,6 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <DYWiFiConfig.h>
-//#include <LiquidCrystal.h>
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 #include <ESP8266HTTPClient.h>
@@ -12,8 +11,8 @@
 char m = 1;												//0为24小时，1为上午，2为下午；若需开启12小时制，则填1或2均可
 static const char ntpServerName[] = "time.windows.com"; //NTP服务器，微软
 const int timeZone = 8;									//时区，北京时间为+8
-static int scrnoff = 22;								//屏幕晚上关闭的时间，24小时制，不想关填24
-static int scrnon = 6;									//屏幕早上开启时间，24小时制，不想关填0
+static int scrnoff = 23;								//屏幕晚上关闭的时间，24小时制，不想关填24
+static int scrnon = 8;									//屏幕早上开启时间，24小时制，不想关填0
 String biliuid = "163844189";							//bilibili UID
 //------------------------------------------------------//
 
@@ -148,9 +147,9 @@ void initdisplay()
 	lcd.clear();
 }
 
-void oledClean()
+void lcd_NightMode()
 {
-	lcd.clear();
+	lcd.setBacklight(0);
 }
 
 bool energysaving(int hours)
@@ -174,13 +173,14 @@ void oledClockDisplay()
 	weekdays = weekday();
 	Serial.printf("%d/%d/%d %d:%d:%d Weekday:%d\n", years, months, days, hours, minutes, seconds, weekdays);
 	Serial.println("");
-	/*if (energysaving(hours))
+	if (energysaving(hours))
 	{
-		oledClean();
-		Serial.println("Screen is in the energy saving mode. ");
-		return;
+		lcd_NightMode();
+		//Serial.println("Screen is in the energy saving mode. ");
+		//return;
 	}
-	Serial.println("Screen is out the energy saving mode. ");*/
+	else
+		lcd.setBacklight(1);
 
 	/*if (isNTPConnected)
 	{
