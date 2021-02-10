@@ -1,0 +1,5 @@
+{
+    "board": "esp8266:esp8266:nodemcuv2",
+    "configuration": "xtal=80,vt=flash,exception=legacy,ssl=all,eesz=4M2M,led=2,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=115200",
+    "sketch": "Network_clock_fans_monitor.ino"
+}
