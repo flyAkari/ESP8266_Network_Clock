@@ -1,10 +1,28 @@
-# ESP8266_Network_Clock
-Use 7-Seg LED, 1602 LCD, 12864 display, LED Dot Matrix and ESP8266 NodeMCU to make a network clock  
-Demo: https://www.bilibili.com/video/av50338779  
+# Network clock and number of your followers monitor
 
-Recommend  
-ESP8266：2.6.1  
-Arduino IDE：1.8.10  
-Arduino Time Library: https://github.com/PaulStoffregen/Time  
-Arduino Timezone Library: https://github.com/JChristensen/Timezone  
-网盘：http://t.cn/AisQmbyf 提取：27mx
+可以在看时间的同时看你有多少粉丝。
+
+## How to use 如何使用
+
+将软件刷写进已经连接好的硬件中，连接 wifi `flyAkari` ，打开网址 `192.168.4.1` ，连上一个可用的wifi即可。
+
+注意：你的手机可能会比较排斥公共的wifi。
+
+按流量计费的用户请注意：这个东西不会消耗很多流量。
+
+## How to conncet wire 如何连线
+
+| esp8266 | 转接板 |
+| :-----: | :----: |
+|   D1    |  SCL   |
+|   D2    |  SDA   |
+
+## 啊，这么简单啊，...那你能帮帮我吗？
+
+![Then can you help help me? ](helpme.gif)
+
+## 接下来的功能
+
+- [x] 实现时间
+- [x] 实现粉丝解析
+- [ ] 实现播放量的解析
