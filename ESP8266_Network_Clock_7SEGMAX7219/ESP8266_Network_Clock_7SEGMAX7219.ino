@@ -258,14 +258,6 @@ void connectWiFi()
         //如需要更换WiFi，请在关闭原WiFi后重启ESP8266，否则上电后会自动连接原WiFi，也就无法进入配网页面
     }
 }
-void EEPROM_write_block(unsigned char *memory_block, unsigned int start_address, unsigned int block_size)
-{
-    unsigned char Count = 0;
-    for (Count = 0; Count < block_size; Count++)
-    {
-        EEPROM.write(start_address + Count, memory_block[Count]);
-    }
-}
 
 /*#################################### NTP时钟 #########################################*/
 WiFiUDP Udp;
