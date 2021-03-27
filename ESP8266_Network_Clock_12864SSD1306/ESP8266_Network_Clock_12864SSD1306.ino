@@ -323,7 +323,20 @@ void oledClockDisplay()
     u8g2.setFont(u8g2_font_unifont_t_chinese2);
     u8g2.setCursor(0, 14);
     if (isNTPConnected)
-        u8g2.print("当前时间 (UTC+8)");
+    {
+        if(timeZone>=0)
+        {
+            u8g2.print("当前时间(UTC+");
+            u8g2.print(timeZone);
+            u8g2.print(")");
+        }
+        else
+        {
+            u8g2.print("当前时间(UTC");
+            u8g2.print(timeZone);
+            u8g2.print(")");
+        }
+    }
     else
         u8g2.print("无网络!"); //如果上次对时失败，则会显示无网络
     String currentTime = "";
