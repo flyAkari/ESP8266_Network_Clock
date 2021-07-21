@@ -35,13 +35,13 @@
 #include <EEPROM.h>
 #include <U8g2lib.h>
 
+#define uint unsigned int
 //若屏幕使用SH1106，只需把SSD1306改为SH1106即可
 //U8G2_SSD1306_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/4, /* dc=*/5, /* reset=*/3);
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/U8X8_PIN_NONE);
 //U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 4, /* data=*/ 5); //D-duino
 
 static const char ntpServerName[] = "ntp1.aliyun.com"; //NTP服务器，阿里云
-int timeZone = 8;                                      //时区，北京时间为+8
 
 WiFiUDP Udp;
 unsigned int localPort = 8888; // 用于侦听UDP数据包的本地端口
@@ -63,7 +63,9 @@ const unsigned char liu[] U8X8_PROGMEM = {
 
 typedef struct
 {                  //存储配置结构体
-    int tz;        //时间戳
+    int tz;        //时区
+    char wifi_ssid[64];
+    char wifi_pw[64];
 } config_type;
 config_type config;
 
@@ -88,11 +90,19 @@ void loadConfig()
     {
         *(p + i) = EEPROM.read(i);
     }
-    timeZone = config.tz;
 }
 
-char sta_ssid[32] = {0};          //暂存WiFi名
-char sta_password[64] = {0};      //暂存WiFi密码
+void printConfig() {
+  Serial.println("===CONFIG===");
+  Serial.print("TimeZone: ");
+  Serial.printf("%d\n",config.tz);
+  Serial.print("WIFI SSID: ");
+  Serial.println(config.wifi_ssid);
+  Serial.print("WIFI Password: ");
+  Serial.println(config.wifi_pw);
+Serial.println("===END CONFIG===");
+}
+
 const char *AP_NAME = "flyAkari"; //自定义8266AP热点名
 //配网及目标日期设定html页面
 const char *page_html = "\
@@ -136,8 +146,8 @@ void handleRootPost()
     if (server.hasArg("ssid"))
     {
         Serial.print("ssid:");
-        strcpy(sta_ssid, server.arg("ssid").c_str());
-        Serial.println(sta_ssid);
+        strcpy(config.wifi_ssid, server.arg("ssid").c_str());
+        Serial.println(config.wifi_ssid);
     }
     else
     {
@@ -148,8 +158,8 @@ void handleRootPost()
     if (server.hasArg("password"))
     {
         Serial.print("password:");
-        strcpy(sta_password, server.arg("password").c_str());
-        Serial.println(sta_password);
+        strcpy(config.wifi_pw, server.arg("password").c_str());
+        Serial.println(config.wifi_pw);
     }
     else
     {
@@ -162,7 +172,7 @@ void handleRootPost()
         Serial.print("timezone:");
         char timeZone_s[4];
         strcpy(timeZone_s, server.arg("timezone").c_str());
-        timeZone = atoi(timeZone_s);
+        int timeZone = atoi(timeZone_s);
         if (timeZone > 13 || timeZone < -13)
         {
             timeZone = 8;
@@ -192,7 +202,7 @@ void connectWiFi()
 {
     WiFi.mode(WIFI_STA);       //切换为STA模式
     WiFi.setAutoConnect(true); //设置自动连接
-    WiFi.begin(sta_ssid, sta_password);
+    WiFi.begin(config.wifi_ssid, config.wifi_pw);
     Serial.println("");
     Serial.print("Connect WiFi");
     int count = 0;
@@ -272,10 +282,10 @@ void setup()
     u8g2.print("192.168.4.1");
     u8g2.sendBuffer();
     Serial.println("OLED Ready");
-    Serial.print("Connecting WiFi...");
     loadConfig();
+    printConfig();
     Serial.print("Connecting WiFi...");
-    WiFi.hostname("Smart-ESP8266");
+    WiFi.hostname("8266DigitalClock");
     connectWiFi();
     Serial.println("Starting UDP");
     Udp.begin(localPort);
@@ -324,16 +334,16 @@ void oledClockDisplay()
     u8g2.setCursor(0, 14);
     if (isNTPConnected)
     {
-        if(timeZone>=0)
+        if(config.tz>=0)
         {
             u8g2.print("当前时间(UTC+");
-            u8g2.print(timeZone);
+            u8g2.print(config.tz);
             u8g2.print(")");
         }
         else
         {
             u8g2.print("当前时间(UTC");
-            u8g2.print(timeZone);
+            u8g2.print(config.tz);
             u8g2.print(")");
         }
     }
@@ -422,8 +432,8 @@ time_t getNtpTime()
             secsSince1900 |= (unsigned long)packetBuffer[42] << 8;
             secsSince1900 |= (unsigned long)packetBuffer[43];
             Serial.println(secsSince1900);
-            Serial.println(secsSince1900 - 2208988800UL + timeZone * SECS_PER_HOUR);
-            return secsSince1900 - 2208988800UL + timeZone * SECS_PER_HOUR;
+            Serial.println(secsSince1900 - 2208988800UL + config.tz * SECS_PER_HOUR);
+            return secsSince1900 - 2208988800UL + config.tz * SECS_PER_HOUR;
         }
     }
     Serial.println("No NTP Response :-("); //无NTP响应
