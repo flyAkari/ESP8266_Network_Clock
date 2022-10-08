@@ -46,6 +46,10 @@ int timeZone = 8;                                      //时区，北京时间�
 WiFiUDP Udp;
 unsigned int localPort = 8888; // 用于侦听UDP数据包的本地端口
 
+char sta_ssid[32] = {0};          //暂存WiFi名
+char sta_password[64] = {0};      //暂存WiFi密码
+const char *AP_NAME = "flyAkari"; //自定义8266AP热点名
+
 time_t getNtpTime();
 void sendNTPpacket(IPAddress &address);
 void oledClockDisplay();
@@ -64,6 +68,8 @@ const unsigned char liu[] U8X8_PROGMEM = {
 typedef struct
 {                  //存储配置结构体
     int tz;        //时间戳
+    char c_ssid[32];
+    char c_pwd[64];
 } config_type;
 config_type config;
 
@@ -89,11 +95,11 @@ void loadConfig()
         *(p + i) = EEPROM.read(i);
     }
     timeZone = config.tz;
+    strcpy(sta_ssid, config.c_ssid);
+    strcpy(sta_password, config.c_pwd);
 }
 
-char sta_ssid[32] = {0};          //暂存WiFi名
-char sta_password[64] = {0};      //暂存WiFi密码
-const char *AP_NAME = "flyAkari"; //自定义8266AP热点名
+
 //配网及目标日期设定html页面
 const char *page_html = "\
 <!DOCTYPE html>\r\n\
@@ -137,6 +143,7 @@ void handleRootPost()
     {
         Serial.print("ssid:");
         strcpy(sta_ssid, server.arg("ssid").c_str());
+        strcpy(config.c_ssid, sta_ssid);
         Serial.println(sta_ssid);
     }
     else
@@ -149,6 +156,7 @@ void handleRootPost()
     {
         Serial.print("password:");
         strcpy(sta_password, server.arg("password").c_str());
+        strcpy(config.c_pwd, sta_password);
         Serial.println(sta_password);
     }
     else
