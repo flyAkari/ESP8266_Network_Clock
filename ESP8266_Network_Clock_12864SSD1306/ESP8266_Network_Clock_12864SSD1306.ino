@@ -275,7 +275,7 @@ void setup()
     u8g2.setCursor(0, 30);
     u8g2.print("connection...");
     u8g2.setCursor(0, 47);
-    u8g2.print("flyAkari");
+    u8g2.print(AP_NAME);
     u8g2.setCursor(0, 64);
     u8g2.print("192.168.4.1");
     u8g2.sendBuffer();
